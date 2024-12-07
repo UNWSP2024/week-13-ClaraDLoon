@@ -1,0 +1,129 @@
+#Clara Riley
+#Luke Snell
+#12/06/24
+
+
+import sqlite3
+
+
+def setup_database():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute(''' 
+    CREATE TABLE IF NOT EXISTS cities ( 
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        city_id INTEGER NOT NULL, 
+        name TEXT NOT NULL, 
+        population INTEGER NOT NULL 
+    ) ''')
+    cursor.execute('''
+    INSERT INTO cities (city_id, name, population) VALUES 
+        (1, 'Tokyo', 37435191), 
+        (2, 'Delhi', 29399141), 
+        (3, 'Shanghai', 26317104), 
+        (4, 'São Paulo', 21846507), 
+        (5, 'Mexico City', 21671908) 
+    ''')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def display_cities_sorted_by_population(order='ASC'):
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT city_id, name, population FROM cities ORDER BY population {order}")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
+    conn.close()
+
+
+def display_cities_sorted_by_name():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT city_id, name, population FROM cities ORDER BY name")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
+    conn.close()
+
+
+def display_total_population():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT SUM(population) FROM cities")
+    total_population = cursor.fetchone()[0]
+    print(f"Total population: {total_population}")
+    cursor.close()
+    conn.close()
+
+
+def display_average_population():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT AVG(population) FROM cities")
+    avg_population = cursor.fetchone()[0]
+    print(f"Average population: {avg_population}")
+    cursor.close()
+    conn.close()
+
+
+def display_city_with_highest_population():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT city_id, name, population FROM cities ORDER BY population DESC LIMIT 1")
+    city = cursor.fetchone()
+    print(f"City with the highest population: {city}")
+    cursor.close()
+    conn.close()
+
+
+def display_city_with_lowest_population():
+    conn = sqlite3.connect('cities.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT city_id, name, population FROM cities ORDER BY population ASC LIMIT 1")
+    city = cursor.fetchone()
+    print(f"City with the lowest population: {city}")
+    cursor.close()
+    conn.close()
+
+
+def main():
+    setup_database()
+    while True:
+        print("\nSelect an operation:")
+        print("1. Display cities sorted by population (ascending)")
+        print("2. Display cities sorted by population (descending)")
+        print("3. Display cities sorted by name")
+        print("4. Display total population")
+        print("5. Display average population")
+        print("6. Display city with highest population")
+        print("7. Display city with lowest population")
+        print("8. Exit")
+        choice = input("Enter choice (1-8): ")
+
+        if choice == '1':
+            display_cities_sorted_by_population('ASC')
+        elif choice == '2':
+            display_cities_sorted_by_population('DESC')
+        elif choice == '3':
+            display_cities_sorted_by_name()
+        elif choice == '4':
+            display_total_population()
+        elif choice == '5':
+            display_average_population()
+        elif choice == '6':
+            display_city_with_highest_population()
+        elif choice == '7':
+            display_city_with_lowest_population()
+        elif choice == '8':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == '__main__':
+    main()
